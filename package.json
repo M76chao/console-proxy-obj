@@ -1,0 +1,11 @@
+{
+  "name": "console-proxy-obj",
+  "version": "0.0.1",
+  "description": "在控制台中打印Proxy对象时，直接打印源对象。对Vue3的ref对象做特殊支持。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
