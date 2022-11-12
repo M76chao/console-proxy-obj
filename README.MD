@@ -10,9 +10,45 @@
 3. When printing, output the called file and line number
 ```
 
-like
-
-Example
+## Example
+1. 
 ```js
+// 在入口文件(In the entry file) main.js
+import { ref, reactive } from 'vue'
+import logProxy from 'console-proxy-obj'
+logProxy() // begin === logProxy({key: 'log', type: 'trace'})
 
+console.log(ref(0))
+console.log(reactive({
+    a: 123
+}))
 ```
+![console-proxy-ref1.png](https://raw.githubusercontent.com/M76chao/file/main/console-proxy-ref/console-proxy-ref1.png)
+
+
+
+```js
+// 在入口文件(In the entry file) main.js
+import { ref, reactive } from 'vue'
+import logProxy from 'console-proxy-obj'
+logProxy({ key: 'info', type: 'error' }) // begin
+
+console.info(ref(0))
+console.info(reactive({
+    a: 123
+}))
+```
+![console-proxy-ref2.png](https://raw.githubusercontent.com/M76chao/file/main/console-proxy-ref/console-proxy-ref2.png)
+
+```js
+// 在入口文件(In the entry file) main.js
+import { ref, reactive } from 'vue'
+import logProxy from 'console-proxy-obj'
+logProxy({ key: 'anyKey-xxx', type: 'any string not `error` and `trace`' }) // begin
+
+console['anyKey-xxx'](ref(0))
+console['anyKey-xxx'](reactive({
+    a: 123
+}))
+```
+![console-proxy-ref3.png](https://raw.githubusercontent.com/M76chao/file/main/console-proxy-ref/console-proxy-ref3.png)
