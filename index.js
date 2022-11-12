@@ -1,78 +1,96 @@
-/*
-* 修改console.log方法，可以直接打印Proxy 的 Tagger 对象，而不用一级级展开
-* */
+import { listenProxy, unListenProxy, clone } from "./until";
+import * as Vue from 'vue'
+let isRef = () => false
+let unref = () => false
 
-// 给 Proxy 对象添加 instanceof 关键字的支持 ↓↓↓
-// https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/WeakSet
-const proxyInstances = new WeakSet()
-const OriginalProxy = window.Proxy
-window.Proxy = new Proxy(Proxy, {
-    construct(target, args) {
-        const newProxy = new OriginalProxy(...args)
-        proxyInstances.add(newProxy)
-        return newProxy
-    },
-    get(obj, prop) {
-        // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Symbol/hasInstance
-        if (prop === Symbol.hasInstance) {
-            return instance => proxyInstances.has(instance)
-        }
-        // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect/get
-        return Reflect.get(...arguments)
-    }
-})
-// 给 Proxy 对象添加 instanceof  关键字的支持 ↑↑↑
-
-// 深克隆
-function clone(obj, _refs = new WeakSet()) {
-    if (obj === null || obj === undefined) return null
-    if (typeof obj !== 'object') return obj
-    if (obj.constructor === Date) return new Date(obj)
-    if (obj.constructor === RegExp) return new RegExp(obj)
-    const newObj = new obj.constructor() //保持继承的原型
-    for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            const val = obj[key]
-            if (typeof val === 'object' && !_refs.has(val)) {
-                newObj[key] = clone(val)
-            } else {
-                newObj[key] = val
-            }
-        }
-    }
-    return newObj
+if (Vue) {
+    isRef = Vue.isRef
+    unref = Vue.unref
 }
 
+console.log(Vue);
+let config = {
+    key: 'log', // any String
+    type: 'trace', // 'trace' | 'error' | ''
+    unListenLog,
+    listenLog
+}
+export default function (obj = {}) {
+    config = {...config, ...obj}
+    listenLog(config)
+    return config
+}
 
-// 修改 log 方法
+// ----------------------------------------
+
+
+
+let oldVal = null
+let oldKey = null
+const groupCollapsed = console.groupCollapsed
+const groupEnd = console.groupEnd
+const trace = console.trace
 const log = console.log
-console.log = function(...arr) {
-    const newArr = arr.map(i => i instanceof Proxy ? clone(i) : i)
-    console.group(...newArr)
-    // console.groupEnd(...newArr)
-    // log(...newArr)
-    // 省事的打印↓↓↓
-    // console.trace(...newArr)
-    const stack = new Error().stack || ''
-    // log(stack)
-    // const stackArr = stack.split('at')
-    const stackArr = stack.match(/\.\/.*[^)\s]/g)
 
-    log(stackArr)
-    // const re = /\.\/.*[^)\s]/g;;
-    // const str1 = 'at  eval (webpack-internal:///./src/main.js:107:9)';
-    // let array1;
-    // console.log(re.exec(str1))
+// const type = 'trace' | 'error' | ''
+function listenLog({key, type}) {
+    key = key || config.key
+    config.key = key
+    type = type || config.type
+    config.type = type
 
-    // stackArr[0] = stackArr[0].replace('Error', 'Console')
+    if (!key) {
+        console.error('Missing required parameter: key')
+    }
+    if (oldVal) {
+        unListenLog()
+    };
+    listenProxy() // 为 new Proxy 对象添加 `instanceof` 支持
+    oldKey = key
+    oldVal = console[key]
+    console[key] = function (...arr) {
+        const newArr = arr.map(i => {
+            if (isRef(i)) {
+                return unref(i)
+            } else if (i instanceof Proxy) {
+                return clone(i)
+            } else {
+                return i
+            }
+        })
+        groupCollapsed(...newArr)
+        if (type === 'trace') {
+            // trace(...newArr)
+            trace('第二行即为调用者所在的文件位置')
+            groupEnd()
+            return
+        }
+        let stack = new Error().stack || ''
 
-    // 直接打印stack，但是会有一个Error 的提示 ↓↓↓
-    // stackArr.splice(1, 1)
-    // stackArr.splice(0, 2)
-    // log(stackArr.join('at'))
+        // stack = stack.replace('Error', 'Log')
+        if (type === 'error') {
+            log('%c这不是一个错误，请点击第二行的"at"，跳转到对应的文件', 'color: #008000')
+            log('%cThis is not an error. Please click "at" in the second line to jump to the corresponding file', 'color: #008000')
+            log(stack)
+            groupEnd()
+            return;
+        }
 
-    // 只打印发起调用的那一行↓↓↓
-    // log('at ' + stackArr[2])
-    console.groupEnd()
+        const stackArr = stack.match(/at.*\s/g) || []
+        log(stackArr[1])
+        groupEnd()
+        return;
+    }
 }
+function unListenLog(clear) {
+    console[oldKey] = oldVal
+    oldKey = oldVal = null
+    if (clear) {
+        unListenProxy()
+        console.log('The monitoring of Proxy has been removed')
+    }
+    return true
+}
+
+
 

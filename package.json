@@ -6,6 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "M76",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M76chao/console-proxy-obj.git"
+  }
 }
+
