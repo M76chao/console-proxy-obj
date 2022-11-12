@@ -1,16 +1,22 @@
 {
-  "name": "console-proxy-obj",
+  "name": "console-proxy-ref",
   "version": "1.0.0",
-  "description": "在控制台中打印Proxy对象时，直接打印源对象。对Vue3的ref对象做特殊支持。",
+  "description": "在浏览器控制台中打印任何Proxy对象时，直接打印源对象。并展示调用栈链。对Vue3的ref对象做特殊支持。",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "M76",
-  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/M76chao/console-proxy-ref/issues"
+  },
+  "keywords": [
+    "console",
+    "Proxy",
+    "Ref"
+  ],
+  "homepage": "https://github.com/M76chao/console-proxy-ref",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/M76chao/console-proxy-obj.git"
-  }
+    "url": "git+https://github.com/M76chao/console-proxy-ref.git"
+  },
+  "license": "ISC"
 }
 
