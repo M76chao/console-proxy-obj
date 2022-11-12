@@ -14,6 +14,10 @@ type config = {
     listenLog
 }
 type agu = {key?, type?}
-export default function logProxy(agu?): config
+type vue = {
+    isRef(any): boolean,
+    unref(any): any
+}
+export default function logProxy(agu?, vue?): config
 // export default function({key?: String, type: typeStr }?): {key, type, unListenLog, listenLog }
 

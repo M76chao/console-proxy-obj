@@ -1,29 +1,19 @@
 import { listenProxy, unListenProxy, clone } from "./until";
-import * as Vue from 'vue'
-let isRef = () => false
-let unref = () => false
-
-if (Vue) {
-    isRef = Vue.isRef
-    unref = Vue.unref
-}
-
-console.log(Vue);
 let config = {
     key: 'log', // any String
     type: 'trace', // 'trace' | 'error' | ''
     unListenLog,
     listenLog
 }
-export default function (obj = {}) {
-    config = {...config, ...obj}
+let Vue = {}
+export default function (obj = {}, vue) {
+    Vue = vue || {}
+    config = { ...config, ...obj }
     listenLog(config)
     return config
 }
 
 // ----------------------------------------
-
-
 
 let oldVal = null
 let oldKey = null
@@ -34,6 +24,11 @@ const log = console.log
 
 // const type = 'trace' | 'error' | ''
 function listenLog({key, type}) {
+    const isRef = Vue.isRef || ((obj) => {
+        return typeof obj === 'object' && !!obj.constructor && obj.constructor.name === 'RefImpl'
+    })
+    const unref = Vue.unref || ((obj) => obj.value)
+
     key = key || config.key
     config.key = key
     type = type || config.type
@@ -59,6 +54,7 @@ function listenLog({key, type}) {
             }
         })
         groupCollapsed(...newArr)
+
         if (type === 'trace') {
             // trace(...newArr)
             trace('第二行即为调用者所在的文件位置')
@@ -79,7 +75,6 @@ function listenLog({key, type}) {
         const stackArr = stack.match(/at.*\s/g) || []
         log(stackArr[1])
         groupEnd()
-        return;
     }
 }
 function unListenLog(clear) {
