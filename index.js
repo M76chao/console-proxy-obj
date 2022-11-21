@@ -31,7 +31,9 @@ function listenLog() {
     listenProxy() // 为 new Proxy 对象添加 `instanceof` 支持
     console[key] = function (...arr) {
         const newArr = arr.map(i => {
-            if (isRef(i)) {
+            if (typeof i !== 'object' || i ===null ) {
+                return i
+            } else if (isRef(i)) {
                 return unref(i)
             } else if (i instanceof Proxy) {
                 return cloneProxy(i)
