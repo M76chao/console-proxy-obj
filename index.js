@@ -1,15 +1,15 @@
 import { listenProxy, unListenProxy, clone, getOrg } from "./until";
 let config = {
     key: 'log', // any String
-    type: 'trace', // 'trace' | 'error' | 'any String'
-    cloneProxy: getOrg
+    type: 'simple', // 'trace' | 'error' | 'simple'
+    cloneProxy: clone
 }
 let Vue = {}
 export default function (obj = {}, vue) {
     Vue = vue || {}
     config = { ...config, ...obj }
-    if (obj.copy === 'clone') {
-        config.cloneProxy = clone
+    if (obj.copy === 'origin') { //
+        config.cloneProxy = getOrg
     }
     listenLog(config)
 }

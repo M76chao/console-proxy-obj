@@ -1,7 +1,7 @@
 export default function logProxy(config?: {
     key?: string,
-    type?: 'trace' | 'error' | string,
-    copy?: string | 'clone'
+    type?: 'trace' | 'error' | 'simple',
+    copy?: 'origin' | 'clone'
 }, VueFn?: {
     isRef?: any
     unref?: any

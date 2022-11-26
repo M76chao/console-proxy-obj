@@ -1,6 +1,6 @@
 {
   "name": "console-proxy-ref",
-  "version": "2.0.1",
+  "version": "2.1.2",
   "description": "在浏览器控制台中打印任何Proxy对象时，直接打印源对象。并展示调用栈链。对Vue3的ref对象做特殊支持。",
   "main": "index.js",
   "author": "M76",

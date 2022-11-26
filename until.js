@@ -30,21 +30,54 @@ export function unListenProxy() {
     window.Proxy = OriginalProxy || window.Proxy
 }
 
+const { log } = console
+
 // 深克隆
-export function getOrg(obj) {
-    return proxyMap.get(obj)
+export function getOrg(obj, _refs = new WeakMap()) {
+    console.info('1')
+    const org = proxyMap.get(obj)
+    if (!org) return org
+    const newObj = new org.constructor()
+    _refs.set(org, newObj)
+    if (org && typeof org === 'object') {
+        for (const key in org) {
+            const val = org[key]
+            if (key === 'ss') {
+                debugger
+            }
+            if (val instanceof Proxy) {
+                if (_refs.has(val)) {
+                    log('出现递归调用，如不想展开Proxy内容，请使用copy: "clone"方式')
+                    newObj[key] = _refs.get(val)
+                } else {
+                    newObj[key] = getOrg(val, _refs)
+                }
+            } else {
+                newObj[key] = val
+            }
+        }
+    }
+    return newObj
 }
-export function clone(obj, _refs = new WeakSet()) {
+export function clone(obj, _refs = new WeakMap()) {
     if (obj === null || obj === undefined) return null
     if (typeof obj !== 'object') return obj
     if (obj.constructor === Date) return new Date(obj)
     if (obj.constructor === RegExp) return new RegExp(obj)
     const newObj = new obj.constructor() //保持继承的原型
+    _refs.set(obj, newObj)
     for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
             const val = obj[key]
-            if (typeof val === 'object' && !_refs.has(val)) {
-                newObj[key] = clone(val)
+            if (key === 'ss') {
+                debugger
+            }
+            if (typeof val === 'object') {
+                if (_refs.has(val)) {
+                    newObj[key] = _refs.get(val)
+                } else {
+                    newObj[key] = clone(val, _refs)
+                }
             } else {
                 newObj[key] = val
             }
