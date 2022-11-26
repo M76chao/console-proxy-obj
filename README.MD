@@ -66,7 +66,7 @@ console.log(reactive({
     a: 123
 }))
 ```
-![console-proxy-ref3.png](https://raw.githubusercontent.com/M76chao/file/main/console-proxy-ref/console-proxy-ref1.png)
+![console-proxy-ref3.png](https://raw.githubusercontent.com/M76chao/file/main/console-proxy-ref/console-proxy-ref3.png)
 
 
 
@@ -95,4 +95,4 @@ console['anyKey-xxx'](reactive({
     a: 123
 }))
 ```
-![console-proxy-ref1.png](https://raw.githubusercontent.com/M76chao/file/main/console-proxy-ref/console-proxy-ref3.png)
+![console-proxy-ref1.png](https://raw.githubusercontent.com/M76chao/file/main/console-proxy-ref/console-proxy-ref1.png)
