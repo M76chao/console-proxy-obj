@@ -1,6 +1,6 @@
 {
   "name": "console-proxy-ref",
-  "version": "2.1.3",
+  "version": "2.1.5",
   "description": "在浏览器控制台中打印任何Proxy对象时，直接打印源对象。并展示调用栈链。对Vue3的ref对象做特殊支持。\n When printing any proxy object in the browser console, print the source object directly. It also shows the call stack chain. Special support is provided for Vue3 ref objects.",
   "main": "index.js",
   "author": "M76",
